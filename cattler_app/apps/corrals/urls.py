@@ -1,6 +1,9 @@
 from django.urls import path
 
-from .views import CorralCreateApiView, CorralListApiView
+from .views import (
+    CorralCreateApiView,
+    CorralListApiView,
+    CorralDestroyApiView)
 
 app_name='corrals_app'
 
@@ -13,4 +16,8 @@ urlpatterns = [
         'corrals-create/',
         CorralCreateApiView.as_view(),
         name='corrals_create'),        
+    path(
+        'corrals-delete/',
+        CorralDestroyApiView.as_view(),
+        name='corrals_delete'),                
 ]

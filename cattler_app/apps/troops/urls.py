@@ -1,6 +1,10 @@
 from django.urls import path
 
-from .views import TroopListApiView, TroopCreateApiView
+from .views import (
+    TroopListApiView,
+    TroopCreateApiView,
+    TroopDestroyApiView
+    )
 
 app_name='troops_app'
 
@@ -13,4 +17,8 @@ urlpatterns = [
         'troop-create/',
         TroopCreateApiView.as_view(),
         name='troop_create'),        
+    path(
+        'troop-delete/',
+        TroopDestroyApiView.as_view(),
+        name='troop_delete'),                
 ]

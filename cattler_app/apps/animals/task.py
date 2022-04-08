@@ -8,7 +8,7 @@ from apps.troops.models import troop
 
 @transaction.atomic
 def animals_ingress(data):
-    msg = 'ingress OK'
+    msg = {"msg":'ingress OK'}
     err_cod = 0
     last_troop = 0
     lot_id = data.get('lot_id')
@@ -26,15 +26,16 @@ def animals_ingress(data):
                     corral_id=item.get('corral'),
                     troop=troop_ing)
                 cant_animals = item.get('quantity')
-                for i in range(cant_animals -1):
+                
+                for i in range(cant_animals-1):
                     animal_ing = animals.objects.create(troop=troop_ing)
                 lot_ing.troops.add(troop_ing)
             else:
                 err_cod = 2
-                msg = 'Existing corral'
+                msg = {"error":'Existing corral'}
                 break
     else:
         err_cod = 1
-        msg = 'Nonexistent lot'
+        msg = {"error":'Nonexistent lot'}
     
     return msg, err_cod

@@ -1,6 +1,10 @@
 from django.urls import path
 
-from .views import LotsListApiView, LotsCreateApiView
+from .views import (
+    LotsListApiView,
+    LotsCreateApiView,
+    LotslDestroyApiView
+    )
 
 app_name='lots_app'
 
@@ -13,4 +17,8 @@ urlpatterns = [
         'lot-create/',
         LotsCreateApiView.as_view(),
         name='lot_create'),        
+    path(
+        'lot-delete/',
+        LotslDestroyApiView.as_view(),
+        name='lot_delete'),                
 ]

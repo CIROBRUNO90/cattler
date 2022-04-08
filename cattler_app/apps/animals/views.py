@@ -1,7 +1,12 @@
-from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.generics import (
+    ListAPIView,
+    CreateAPIView,
+    DestroyAPIView)
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
+
+from django.db.models import Q
 
 from .models import animals
 from .serializers import AnimalsSerializer
@@ -41,6 +46,33 @@ class AnimalsCreateApiView(CreateAPIView):
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
+class AnimalsDestroyApiView(DestroyAPIView):
+    """
+    request:
+    {
+        "caravana": 1,
+        "rfid": 321,
+    }        
+    """
+    def delete(self, request, *args, **kwargs):
+        caravana = request.data.get('caravana', None)
+        rfid = request.data.get('rfid', None)
+        msg = {"msg":'delete ok'}
+
+        if caravana or rfid:
+            animal_del = animals.objects.filter(Q(caravana=caravana) | Q(rfid=rfid))
+            if animal_del:
+                animal_del.delete()
+                status_code = status.HTTP_204_NO_CONTENT
+            else:
+                status_code = status.HTTP_400_BAD_REQUEST
+                msg = {"error": 'Nonexistent animal'}    
+        else:
+            status_code = status.HTTP_400_BAD_REQUEST
+            msg = {"error":'caravana or rfid required'}
+
+        return Response(status=status_code, data=msg)
+
 class AnimalsIngressApiView(APIView):
     """
     request:
@@ -54,7 +86,6 @@ class AnimalsIngressApiView(APIView):
         ]
     }    
     """
-
     def post(self, request):
         msg, err_code = animals_ingress(request.data)
 

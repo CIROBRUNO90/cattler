@@ -1,4 +1,9 @@
-from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.generics import (
+    ListAPIView,
+    CreateAPIView,
+    DestroyAPIView)
+from rest_framework import status
+from rest_framework.response import Response
 
 from .models import troop
 from .serializers import TroopSerializer
@@ -32,3 +37,28 @@ class TroopCreateApiView(CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
+
+class TroopDestroyApiView(DestroyAPIView):
+    """
+    request:
+    {
+        "troop_id": 1
+    }
+    """
+    def delete(self, request, *args, **kwargs):
+        troop_id = request.data.get('troop_id', None)
+        msg = {"msg":'delete ok'}
+
+        if troop_id:
+            troop_del = troop.objects.filter(troop_id=troop_id).first()
+            if troop_del:
+                troop_del.delete()
+                status_code = status.HTTP_204_NO_CONTENT
+            else:
+                status_code = status.HTTP_400_BAD_REQUEST
+                msg = {"error": 'Nonexistent troop'}
+        else:
+            status_code = status.HTTP_400_BAD_REQUEST
+            msg = {"error":'troop id required'}
+
+        return Response(status=status_code, data=msg)
